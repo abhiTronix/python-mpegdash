@@ -19,7 +19,7 @@ class MPEGDASHParser(object):
         else:
             try:
                 mpd_string = urlopen(string_or_url).read()
-            except ValueError:
+            except Exception as e:
                 with open(string_or_url, 'r') as f:
                     mpd_string = f.read()
 
