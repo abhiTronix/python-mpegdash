@@ -320,16 +320,19 @@ class Descriptor(XMLNode):
         self.scheme_id_uri = ''                               # xs:anyURI (required)
         self.value = None                                     # xs:string
         self.id = None                                        # xs:string
+        self.key_id = None                                    # xs:string
 
     def parse(self, xmlnode):
         self.scheme_id_uri = parse_attr_value(xmlnode, 'schemeIdUri', str)
         self.value = parse_attr_value(xmlnode, 'value', str)
         self.id = parse_attr_value(xmlnode, 'id', str)
+        self.key_id = parse_attr_value(xmlnode, 'ns2:default_KID', str)
 
     def write(self, xmlnode):
         write_attr_value(xmlnode, 'schemeIdUri', self.scheme_id_uri)
         write_attr_value(xmlnode, 'value', self.value)
         write_attr_value(xmlnode, 'id', self.id)
+        write_attr_value(xmlnode, 'ns2:default_KID', self.key_id)
 
 
 class ContentComponent(XMLNode):
@@ -369,6 +372,7 @@ class ContentComponent(XMLNode):
 
 class RepresentationBase(XMLNode):
     def __init__(self):
+        self.profile = None                                   # xs:string
         self.profiles = None                                  # xs:string
         self.width = None                                     # xs:unsigendInt
         self.height = None                                    # xs:unsigendInt
@@ -392,7 +396,8 @@ class RepresentationBase(XMLNode):
         self.inband_event_streams = None                      # DescriptorType*
 
     def parse(self, xmlnode):
-        self.profiles = parse_attr_value(xmlnode, 'profile', str)
+        self.profile = parse_attr_value(xmlnode, 'profile', str)
+        self.profiles = parse_attr_value(xmlnode, 'profiles', str)
         self.width = parse_attr_value(xmlnode, 'width', int)
         self.height = parse_attr_value(xmlnode, 'height', int)
         self.sar = parse_attr_value(xmlnode, 'sar', str)
@@ -415,7 +420,8 @@ class RepresentationBase(XMLNode):
         self.inband_event_streams = parse_child_nodes(xmlnode, 'InbandEventStream', Descriptor)
 
     def write(self, xmlnode):
-        write_attr_value(xmlnode, 'profile', self.profiles)
+        write_attr_value(xmlnode, 'profile', self.profile)
+        write_attr_value(xmlnode, 'profiles', self.profiles)
         write_attr_value(xmlnode, 'width', self.width)
         write_attr_value(xmlnode, 'height', self.height)
         write_attr_value(xmlnode, 'sar', self.sar)
@@ -533,6 +539,7 @@ class AdaptationSet(RepresentationBase):
         self.min_frame_rate = None                            # FrameRateType
         self.max_frame_rate = None                            # FrameRateType
         self.segment_alignment = None                         # ConditionalUintType
+        self.selection_priority = None                        # xs:unsignedInt
         self.subsegment_alignment = None                      # ConditionalUintType
         self.subsegment_starts_with_sap = None                # SAPType
         self.bitstream_switching = None                       # xs:boolean
@@ -566,6 +573,7 @@ class AdaptationSet(RepresentationBase):
         self.min_frame_rate = parse_attr_value(xmlnode, 'minFrameRate', str)
         self.max_frame_rate = parse_attr_value(xmlnode, 'maxFrameRate', str)
         self.segment_alignment = parse_attr_value(xmlnode, 'segmentAlignment', bool)
+        self.selection_priority = parse_attr_value(xmlnode, 'selectionPriority', int)
         self.subsegment_alignment = parse_attr_value(xmlnode, 'subsegmentAlignment', bool)
         self.subsegment_starts_with_sap = parse_attr_value(xmlnode, 'subsegmentStartsWithSAP', int)
         self.bitstream_switching = parse_attr_value(xmlnode, 'bitstreamSwitching', bool)
@@ -599,6 +607,7 @@ class AdaptationSet(RepresentationBase):
         write_attr_value(xmlnode, 'minFrameRate', self.min_frame_rate)
         write_attr_value(xmlnode, 'maxFrameRate', self.max_frame_rate)
         write_attr_value(xmlnode, 'segmentAlignment', self.segment_alignment)
+        write_attr_value(xmlnode, 'selectionPriority', self.selection_priority)
         write_attr_value(xmlnode, 'subsegmentAlignment', self.subsegment_alignment)
         write_attr_value(xmlnode, 'subsegmentStartsWithSAP', self.subsegment_starts_with_sap)
         write_attr_value(xmlnode, 'bitstreamSwitching', self.bitstream_switching)
